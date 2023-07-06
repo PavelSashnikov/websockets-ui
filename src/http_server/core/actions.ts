@@ -1,3 +1,4 @@
+import { GAME_DB } from '../../DB/games.ts';
 import { ROOM_DB } from '../../DB/rooms.ts';
 import { USERS_DB } from '../../DB/users.ts';
 import { IncomingMessage, MessageTemplate, OutgoingMessage } from '../entities/interface/message.ts';
@@ -8,7 +9,7 @@ export class ActionResolver {
   static get rooms() {
     return Object.values(ROOM_DB);
   }
-  static id: number;
+  static id: number = 1;
 
   static register(mes: IncomingMessage.Registration, socketId: string): OutgoingMessage.Registration {
     const { name, password } = mes;
@@ -35,6 +36,19 @@ export class ActionResolver {
     };
     ROOM_DB[key] = room;
     return ActionResolver.rooms;
+  }
+
+  static addUserToRoom(data: IncomingMessage.AddToRoom, userKey: string): OutgoingMessage.CreateGame | null {
+    const ind = data.indexRoom;
+    const room = Object.values(ROOM_DB).find((r) => r.roomId === ind);
+    const user = USERS_DB[userKey];
+    if (room?.roomUsers.some(u => u.index === user.index)) {
+      return null;
+    }
+    room?.roomUsers.push(user);
+    GAME_DB[room?.roomId!] = { idGame: room?.roomId!, idPlayer: user.index };
+
+    return GAME_DB[room?.roomId!];
   }
 
   static logout(id: string): void {

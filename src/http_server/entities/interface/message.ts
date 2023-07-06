@@ -5,6 +5,10 @@ export namespace IncomingMessage {
     name: string;
     password: string;
   }
+
+  export interface AddToRoom {
+    indexRoom: number;
+  }
 }
 
 export namespace OutgoingMessage {
@@ -13,6 +17,11 @@ export namespace OutgoingMessage {
     index: number;
     error: boolean;
     errorText: string;
+  }
+
+  export interface CreateGame {
+    idGame: number;
+    idPlayer: number;
   }
 }
 
