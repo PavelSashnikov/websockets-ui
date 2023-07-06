@@ -1,7 +1,11 @@
 export const incomingParser = (mess: Buffer): unknown => {
   const out = JSON.parse(mess.toString());
-  const data = JSON.parse(out.data);
-  return { ...out, data };
+  try {
+    const data = JSON.parse(out.data);
+    return { ...out, data };
+  } catch (error) {
+    return { ...out };
+  }
 };
 
 //TODO: add mess type

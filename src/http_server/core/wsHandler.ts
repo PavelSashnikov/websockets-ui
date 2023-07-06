@@ -15,16 +15,24 @@ export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
 
   wsClient.on('message', (message: Buffer) => {
     const inc = incomingParser(message) as MessageTemplate;
-    let res;
+    let res: unknown;
     switch (inc.type) {
       case Actions.reg:
         res = ActionResolver.register(inc.data as IncomingMessage.Registration, key);
+        wsClient.send(outgoingParser({ type: inc.type, id: inc.id, data: JSON.stringify(res) }));
+        wsClient.send(
+          outgoingParser({ type: Actions.u_room, id: inc.id, data: JSON.stringify(ActionResolver.rooms) })
+        );
+        break;
+      case Actions.c_room:
+        res = ActionResolver.addRoom(key);
+        connections.forEach((c) => {
+          c.send(outgoingParser({ type: Actions.u_room, id: inc.id, data: JSON.stringify(res) }));
+        });
         break;
       default:
         break;
     }
-    const out = outgoingParser({ type: inc.type, id: inc.id, data: JSON.stringify(res) });
-    wsClient.send(out);
   });
 
   wsClient.on('close', () => {
