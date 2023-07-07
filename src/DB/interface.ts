@@ -1,15 +1,18 @@
+import { Ship } from "../http_server/entities/interface/message.ts";
+
 export interface IUser {
   name: string;
-  password: string;
   index: number;
 }
 
 export interface IRoom {
   roomId: number;
-  roomUsers: Omit<IUser, 'password'>[];
+  roomUsers: IUser[];
 }
 
-export interface IGameMain {
+export interface IGame {
   idGame: number;
-  idPlayer: number;
+  users: {
+    [key: number]: Ship[];
+  };
 }

@@ -17,38 +17,54 @@ export class ActionResolver {
     const user = validateUser({ name, password }, ++ActionResolver.id);
 
     if (!user.error) {
-      USERS_DB[socketId] = { name, password, index: user.index };
+      USERS_DB[socketId] = { name, index: user.index };
     }
 
     return user;
   }
 
   static addRoom(key: string) {
-    const user = { name: USERS_DB[key].name, index: USERS_DB[key].index };
+    const user = USERS_DB[key];
     const room = {
       roomId: user.index,
-      roomUsers: [
-        {
-          name: user.name,
-          index: user.index,
-        },
-      ],
+      roomUsers: [user],
     };
-    ROOM_DB[key] = room;
+    ROOM_DB[user.index] = room;
     return ActionResolver.rooms;
   }
 
   static addUserToRoom(data: IncomingMessage.AddToRoom, userKey: string): OutgoingMessage.CreateGame | null {
     const ind = data.indexRoom;
-    const room = Object.values(ROOM_DB).find((r) => r.roomId === ind);
+    const room = ROOM_DB[ind];
     const user = USERS_DB[userKey];
-    if (room?.roomUsers.some(u => u.index === user.index)) {
+    if (room?.roomUsers.some((u) => u.index === user.index)) {
       return null;
     }
     room?.roomUsers.push(user);
-    GAME_DB[room?.roomId!] = { idGame: room?.roomId!, idPlayer: user.index };
+    const usersInGame = {
+      [user.index]: [],
+      [room?.roomId!]: [],
+    };
+
+    
+    GAME_DB[room.roomId] = { idGame: room?.roomId!, users: usersInGame };
+    delete ROOM_DB[ind];
 
     return GAME_DB[room?.roomId!];
+  }
+
+  static addShips(data: IncomingMessage.AddShips): boolean {
+    try {
+      const game = GAME_DB[data.gameId];
+      game.users[data.indexPlayer] = data.ships;
+      console.log("🚀 ~ file: actions.ts:61 ~ ActionResolver ~ addShips ~ game.users:", game.users)
+      if (Object.values(game.users).every(u => u.length)) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
   }
 
   static logout(id: string): void {

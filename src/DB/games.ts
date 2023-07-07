@@ -1,3 +1,3 @@
-import { IGameMain } from './interface.ts';
+import { IGame } from './interface.ts';
 
-export const GAME_DB: { [key: string]: IGameMain } = {};
+export const GAME_DB: { [key: string]: IGame } = {};
