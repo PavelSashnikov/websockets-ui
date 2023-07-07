@@ -19,9 +19,14 @@ export namespace IncomingMessage {
   }
 
   export interface Attack {
-    gameID: number;
+    gameId: number;
     x: number;
     y: number;
+    indexPlayer: number;
+  }
+
+  export interface RandomAttack {
+    gameId: number;
     indexPlayer: number;
   }
 }
@@ -44,12 +49,13 @@ export namespace OutgoingMessage {
   }
 
   export interface Attack {
-    position: {
-      x: number;
-      y: number;
-    };
+    position: Coord;
     currentPlayer: number /* id of the player in the current game */;
     status: AttackStatus;
+  }
+
+  export interface Turn {
+    currentPlayer: number;
   }
 }
 
@@ -60,10 +66,25 @@ export interface MessageTemplate<T = any> {
 }
 
 export interface Ship {
-  position: { x: number; y: number };
+  position: Coord;
   direction: boolean;
   length: number;
   type: ShipType;
 }
 type ShipType = 'small' | 'medium' | 'large' | 'huge';
-type AttackStatus = 'miss' | 'killed' | 'shot';
+export type AttackStatus = 'miss' | 'killed' | 'shot';
+
+export type Coord = {
+  x: number;
+  y: number;
+};
+
+export enum cell {
+  default,
+  ship,
+  empty,
+  shot,
+  kill,
+}
+
+export type Grid = cell[][];

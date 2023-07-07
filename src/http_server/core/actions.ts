@@ -1,8 +1,9 @@
-import { GAME_DB } from '../../DB/games.ts';
+import { GAME_DB, WINNERS } from '../../DB/games.ts';
 import { ROOM_DB } from '../../DB/rooms.ts';
 import { USERS_DB } from '../../DB/users.ts';
 import { IncomingMessage, MessageTemplate, OutgoingMessage } from '../entities/interface/message.ts';
 import { validateUser } from '../entities/validator.ts';
+import { createGrid, shot } from '../helpers/grid.ts';
 
 export class ActionResolver {
   constructor() {}
@@ -46,8 +47,7 @@ export class ActionResolver {
       [room?.roomId!]: [],
     };
 
-    
-    GAME_DB[room.roomId] = { idGame: room?.roomId!, users: usersInGame };
+    GAME_DB[room.roomId] = { idGame: room?.roomId!, users: usersInGame, grid: {} };
     delete ROOM_DB[ind];
 
     return GAME_DB[room?.roomId!];
@@ -57,14 +57,77 @@ export class ActionResolver {
     try {
       const game = GAME_DB[data.gameId];
       game.users[data.indexPlayer] = data.ships;
-      console.log("🚀 ~ file: actions.ts:61 ~ ActionResolver ~ addShips ~ game.users:", game.users)
-      if (Object.values(game.users).every(u => u.length)) {
+      game.grid[data.indexPlayer] = createGrid(data.ships);
+      if (Object.values(game.users).every((u) => u.length)) {
         return true;
       }
       return false;
     } catch (error) {
       return false;
     }
+  }
+
+  static attack(data: IncomingMessage.Attack): {
+    res: OutgoingMessage.Attack;
+    nextUser: number;
+    won: boolean;
+  } {
+    const game = GAME_DB[data.gameId];
+    const currUser = game.grid[data.indexPlayer];
+    const secondUserKey: number = +Object.keys(game.users).find((k) => +k !== data.indexPlayer)!;
+    const secondUser = game.grid[secondUserKey];
+
+    let [res, won] = shot({ x: data.x, y: data.y }, secondUser);
+
+    if (won) {
+      const winUser = Object.values(USERS_DB).find((u) => u.index === data.indexPlayer)?.name;
+      WINNERS[winUser!] ? WINNERS[winUser!].wins++ : (WINNERS[winUser!] = { name: winUser!, wins: 1 });
+    }
+
+    return {
+      res: {
+        position: {
+          x: data.x,
+          y: data.y,
+        },
+        currentPlayer: data.indexPlayer,
+        status: res,
+      },
+      nextUser: secondUserKey,
+      won,
+    };
+  }
+
+  static randomAttack(data: IncomingMessage.RandomAttack): {
+    res: OutgoingMessage.Attack;
+    nextUser: number;
+    won: boolean;
+  } {
+    const game = GAME_DB[data.gameId];
+    const secondUserKey: number = +Object.keys(game.users).find((k) => +k !== data.indexPlayer)!;
+    const secondUser = game.grid[secondUserKey];
+
+    const x = Math.floor(Math.random() * 10);
+    const y = Math.floor(Math.random() * 10);
+    const [res, won] = shot({ x, y }, secondUser);
+
+    if (won) {
+      const winUser = Object.values(USERS_DB).find((u) => u.index === data.indexPlayer)?.name;
+      WINNERS[winUser!] ? WINNERS[winUser!].wins++ : (WINNERS[winUser!] = { name: winUser!, wins: 1 });
+    }
+
+    return {
+      res: {
+        position: {
+          x,
+          y,
+        },
+        currentPlayer: data.indexPlayer,
+        status: res,
+      },
+      nextUser: secondUserKey,
+      won: won,
+    };
   }
 
   static logout(id: string): void {

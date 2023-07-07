@@ -5,7 +5,7 @@ import { incomingParser, outgoingParser } from '../helpers/parsers.ts';
 import { IncomingMessage, MessageTemplate, OutgoingMessage } from '../entities/interface/message.ts';
 import { Actions } from '../entities/interface/common.ts';
 import { ActionResolver } from './actions.ts';
-import { addShips, addToRoom, createRoom, reg } from './response.ts';
+import { addShips, addToRoom, attack, createRoom, randomAttack, reg } from './response.ts';
 
 export const connections = new Map();
 
@@ -41,6 +41,14 @@ export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
 
       case Actions.add_ships:
         addShips(wsClient, message, key);
+        break;
+
+      case Actions.attack:
+        attack(wsClient, message, key);
+        break;
+
+      case Actions.r_attack:
+        randomAttack(wsClient, message, key);
         break;
 
       default:

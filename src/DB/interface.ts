@@ -1,4 +1,4 @@
-import { Ship } from "../http_server/entities/interface/message.ts";
+import { Grid, Ship } from '../http_server/entities/interface/message.ts';
 
 export interface IUser {
   name: string;
@@ -15,4 +15,12 @@ export interface IGame {
   users: {
     [key: number]: Ship[];
   };
+  grid: {
+    [key: number]: Grid;
+  };
+}
+
+export interface IWinner {
+  name: string;
+  wins: number;
 }
