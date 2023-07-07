@@ -4,4 +4,5 @@ export enum Actions {
   u_room = 'update_room',
   add_to_room = 'add_user_to_room',
   c_game = 'create_game',
+  add_ships = 'add_ships',
 }

@@ -9,6 +9,8 @@ export namespace IncomingMessage {
   export interface AddToRoom {
     indexRoom: number;
   }
+
+  export type CreateRoom = '';
 }
 
 export namespace OutgoingMessage {

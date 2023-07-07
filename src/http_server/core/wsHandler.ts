@@ -5,45 +5,43 @@ import { incomingParser, outgoingParser } from '../helpers/parsers.ts';
 import { IncomingMessage, MessageTemplate, OutgoingMessage } from '../entities/interface/message.ts';
 import { Actions } from '../entities/interface/common.ts';
 import { ActionResolver } from './actions.ts';
+import { addToRoom, createRoom, reg } from './response.ts';
 
-const connections = new Map();
+export const connections = new Map();
 
 export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
+  if (connections.size === 2) {
+    wsClient.send(
+      outgoingParser({
+        type: Actions.reg,
+        id: 0,
+        data: JSON.stringify({ error: true, errorText: 'slots are busy' }),
+      })
+    );
+    return;
+  }
   const key = req.headers['sec-websocket-key'] as string;
   console.log('new user connected ', key);
   connections.set(key, wsClient);
 
   wsClient.on('message', (message: Buffer) => {
     const inc = incomingParser(message) as MessageTemplate;
-    let res: unknown;
     switch (inc.type) {
       case Actions.reg:
-        res = ActionResolver.register(inc.data as IncomingMessage.Registration, key);
-        wsClient.send(outgoingParser({ type: inc.type, id: inc.id, data: JSON.stringify(res) }));
-        wsClient.send(
-          outgoingParser({ type: Actions.u_room, id: inc.id, data: JSON.stringify(ActionResolver.rooms) })
-        );
+        reg(wsClient, message, key);
         break;
-      case Actions.c_room:
-        res = ActionResolver.addRoom(key);
-        connections.forEach((c) => {
-          c.send(outgoingParser({ type: Actions.u_room, id: inc.id, data: JSON.stringify(res) }));
-        });
-        break;
-      case Actions.add_to_room:
-        res = ActionResolver.addUserToRoom(
-          inc.data as IncomingMessage.AddToRoom,
-          key
-        ) as OutgoingMessage.CreateGame;
-        if (!res) {
-          break;
-        }
-        connections.forEach((c) => {
-          c.send(outgoingParser({ type: Actions.u_room, id: inc.id, data: JSON.stringify(res) }));
-          c.send(outgoingParser({ type: Actions.c_game, id: inc.id, data: JSON.stringify(res) }));
-        });
 
+      case Actions.c_room:
+        createRoom(wsClient, message, key);
         break;
+
+      case Actions.add_to_room:
+        addToRoom(wsClient, message, key);
+        break;
+
+      case Actions.add_ships:
+        break;
+
       default:
         break;
     }
