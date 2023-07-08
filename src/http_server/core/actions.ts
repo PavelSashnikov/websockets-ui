@@ -93,13 +93,6 @@ export class ActionResolver {
     let x = random ? Math.floor(Math.random() * 10) : data.x;
     let y = random ? Math.floor(Math.random() * 10) : data.y;
 
-    if(random) {
-      while (secondUser[y][x] !== cell.default) {
-        x = Math.floor(Math.random() * 10);
-        y = Math.floor(Math.random() * 10);
-      }
-    }
-
     let [res, won] = shot({ x, y }, secondUser);
 
     if (won) {
