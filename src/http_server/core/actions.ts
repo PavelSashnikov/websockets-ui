@@ -1,9 +1,10 @@
 import { GAME_DB, WINNERS } from '../../DB/games.ts';
 import { ROOM_DB } from '../../DB/rooms.ts';
 import { USERS_DB } from '../../DB/users.ts';
-import { IncomingMessage, OutgoingMessage } from '../entities/interface/message.ts';
+import { BOT_INDEX_PLUS } from '../entities/constants.ts';
+import { IncomingMessage, OutgoingMessage, Ship, cell } from '../entities/interface/message.ts';
 import { validateUser } from '../entities/validator.ts';
-import { createGrid, shot } from '../helpers/grid.ts';
+import { createGrid, placeRandom, shot } from '../helpers/grid.ts';
 
 export class ActionResolver {
   constructor() {}
@@ -51,7 +52,6 @@ export class ActionResolver {
     };
 
     const u = ActionResolver.getCurrUsers(Object.keys(usersInGame));
-    console.log("🚀 ~ file: actions.ts:54 ~ ActionResolver ~ u:", u)
 
     GAME_DB[room.roomId] = { idGame: room?.roomId!, users: usersInGame, grid: {} };
     delete ROOM_DB[ind];
@@ -78,10 +78,10 @@ export class ActionResolver {
     data: IncomingMessage.Attack,
     random = false
   ): {
-    res: OutgoingMessage.Attack;
-    nextUser: number;
-    won: boolean;
-    u: string[];
+    res?: OutgoingMessage.Attack;
+    nextUser?: number;
+    won?: boolean;
+    u?: string[];
   } {
     const game = GAME_DB[data.gameId];
     const currUser = game.grid[data.indexPlayer];
@@ -90,8 +90,15 @@ export class ActionResolver {
 
     const u = ActionResolver.getCurrUsers(Object.keys(game.users));
 
-    const x = random ? Math.floor(Math.random() * 10) : data.x;
-    const y = random ? Math.floor(Math.random() * 10) : data.y;
+    let x = random ? Math.floor(Math.random() * 10) : data.x;
+    let y = random ? Math.floor(Math.random() * 10) : data.y;
+
+    if(random) {
+      while (secondUser[y][x] !== cell.default) {
+        x = Math.floor(Math.random() * 10);
+        y = Math.floor(Math.random() * 10);
+      }
+    }
 
     let [res, won] = shot({ x, y }, secondUser);
 
@@ -103,16 +110,27 @@ export class ActionResolver {
     return {
       res: {
         position: {
-          x: data.x,
-          y: data.y,
+          x,
+          y,
         },
         currentPlayer: data.indexPlayer,
         status: res,
       },
       nextUser: secondUserKey,
       won,
-      u
+      u,
     };
+  }
+
+  static createSingleGame(socketId: string) {
+    const user = USERS_DB[socketId];
+    const game = {
+      idGame: user.index,
+      users: { [user.index]: [], [user.index + BOT_INDEX_PLUS]: [{} as Ship] },
+      grid: { [user.index + BOT_INDEX_PLUS]: placeRandom() },
+    };
+    GAME_DB[user.index] = game;
+    return game;
   }
 
   static logout(id: string): void {
@@ -121,9 +139,7 @@ export class ActionResolver {
   }
 
   private static getCurrUsers(ind: (string | number)[]): string[] {
-    console.log("🚀 ~ file: actions.ts:124 ~ ActionResolver ~ getCurrUsers ~ ind:", ind)
     const res: string[] = [];
-    console.log("🚀 ~ file: actions.ts:127 ~ ActionResolver ~ Object.keys ~ USERS_DB:", USERS_DB)
     Object.keys(USERS_DB).forEach((k) => {
       if (ind.includes(USERS_DB[k].index.toString())) {
         res.push(k);

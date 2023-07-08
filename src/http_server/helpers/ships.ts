@@ -1,0 +1,40 @@
+import { Grid, cell } from "../entities/interface/message.ts";
+
+export const SHIP_GRIDS: Grid[] = [
+  [
+    [cell.ship, cell.default,cell.default,cell.default,cell.default,cell.ship,cell.ship,cell.ship,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.default,cell.ship,cell.default,cell.ship,cell.ship,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.ship,cell.ship],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.ship,cell.ship,cell.ship],
+  ],
+  [
+    [cell.default, cell.default,cell.default,cell.ship,cell.ship,cell.ship,cell.ship,cell.default,cell.default,cell.ship],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.ship,cell.ship,cell.default,cell.default,cell.ship,cell.ship,cell.ship,cell.ship,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.ship],
+    [cell.ship, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.ship,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.ship,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.ship,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default],
+  ],
+  [
+    [cell.default, cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.ship,cell.default,cell.default,cell.default,cell.ship,cell.ship,cell.default],
+    [cell.ship, cell.default,cell.default,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.default,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.ship],
+    [cell.default, cell.ship,cell.ship,cell.ship,cell.ship,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.default, cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default,cell.default],
+    [cell.ship, cell.default,cell.ship,cell.ship,cell.default,cell.ship,cell.ship,cell.default,cell.ship,cell.default],
+  ],
+]

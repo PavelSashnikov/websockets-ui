@@ -1,4 +1,5 @@
 import { AttackStatus, Coord, Grid, Ship, cell } from '../entities/interface/message.ts';
+import { SHIP_GRIDS } from './ships.ts';
 
 export const createGrid = (ships: Ship[]): Grid => {
   const grid: Grid = [];
@@ -57,4 +58,9 @@ export const shot = (coord: Coord, grid: Grid): [AttackStatus, boolean] => {
     return [found ? 'shot' : 'killed', won];
   }
   return ['miss', false];
+};
+
+export const placeRandom = (): Grid => {
+  const i = Math.floor(Math.random() * SHIP_GRIDS.length);
+  return SHIP_GRIDS[i];
 };

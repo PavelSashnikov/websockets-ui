@@ -5,7 +5,7 @@ import { incomingParser, outgoingParser } from '../helpers/parsers.ts';
 import { MessageTemplate } from '../entities/interface/message.ts';
 import { Actions } from '../entities/interface/common.ts';
 import { ActionResolver } from './actions.ts';
-import { addShips, addToRoom, attack, createRoom, reg } from './response.ts';
+import { addShips, addToRoom, attack, createRoom, reg, sPlay } from './response.ts';
 
 export const connections = new Map();
 
@@ -39,6 +39,10 @@ export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
 
       case Actions.r_attack:
         attack(wsClient, message, key, true);
+        break;
+
+      case Actions.s_play:
+        sPlay(wsClient, message, key);
         break;
 
       default:

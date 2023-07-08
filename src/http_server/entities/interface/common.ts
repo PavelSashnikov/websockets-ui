@@ -11,4 +11,5 @@ export enum Actions {
   turn = 'turn',
   finish = 'finish',
   u_winners = 'update_winners',
+  s_play = 'single_play',
 }
