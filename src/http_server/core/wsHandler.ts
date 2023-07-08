@@ -2,24 +2,14 @@ import WebSocket from 'ws';
 import http from 'http';
 import { hostname } from 'os';
 import { incomingParser, outgoingParser } from '../helpers/parsers.ts';
-import { IncomingMessage, MessageTemplate, OutgoingMessage } from '../entities/interface/message.ts';
+import { MessageTemplate } from '../entities/interface/message.ts';
 import { Actions } from '../entities/interface/common.ts';
 import { ActionResolver } from './actions.ts';
-import { addShips, addToRoom, attack, createRoom, randomAttack, reg } from './response.ts';
+import { addShips, addToRoom, attack, createRoom, reg } from './response.ts';
 
 export const connections = new Map();
 
 export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
-  if (connections.size === 2) {
-    wsClient.send(
-      outgoingParser({
-        type: Actions.reg,
-        id: 0,
-        data: JSON.stringify({ error: true, errorText: 'slots are busy' }),
-      })
-    );
-    return;
-  }
   const key = req.headers['sec-websocket-key'] as string;
   console.log('new user connected ', key);
   connections.set(key, wsClient);
@@ -48,7 +38,7 @@ export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
         break;
 
       case Actions.r_attack:
-        randomAttack(wsClient, message, key);
+        attack(wsClient, message, key, true);
         break;
 
       default:
