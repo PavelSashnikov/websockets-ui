@@ -9,6 +9,8 @@
 ## Usage
 **Development**
 
+* rename `.env.example` to `.env` or create your own. *Remember about client tries  to connect to 3000*
+
 `npm run start:dev`
 
 * App served @ `http://localhost` with nodemon
