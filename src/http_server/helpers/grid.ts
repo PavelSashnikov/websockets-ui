@@ -61,6 +61,6 @@ export const shot = (coord: Coord, grid: Grid): [AttackStatus, boolean] => {
 };
 
 export const placeRandom = (): Grid => {
-  const i = Math.floor(Math.random() * SHIP_GRIDS.length);
+  const i = Math.floor(Math.random() * SHIP_GRIDS.length - 1);
   return SHIP_GRIDS[i];
 };
