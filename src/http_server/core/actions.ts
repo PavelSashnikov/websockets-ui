@@ -93,11 +93,21 @@ export class ActionResolver {
     let x = random ? Math.floor(Math.random() * 10) : data.x;
     let y = random ? Math.floor(Math.random() * 10) : data.y;
 
+    while (
+      random &&
+      (secondUser[y][x] === cell.kill || secondUser[y][x] === cell.shot || secondUser[y][x] === cell.empty)
+    ) {
+      x = Math.floor(Math.random() * 10);
+      y = Math.floor(Math.random() * 10);
+    }
+
     let [res, won] = shot({ x, y }, secondUser);
 
     if (won) {
       const winUser = Object.values(USERS_DB).find((u) => u.index === data.indexPlayer)?.name;
-      WINNERS[winUser!] ? WINNERS[winUser!].wins++ : (WINNERS[winUser!] = { name: winUser!, wins: 1 });
+      WINNERS[winUser!]
+        ? WINNERS[winUser!].wins++
+        : (WINNERS[winUser!] = { name: winUser || 'Andy-BOT', wins: 1 });
     }
 
     return {

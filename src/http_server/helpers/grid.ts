@@ -35,6 +35,7 @@ export const placeShips = (ships: Ship[], grid: Grid): Grid => {
 
 export const shot = (coord: Coord, grid: Grid): [AttackStatus, boolean] => {
   if (grid[coord.y][coord.x] === cell.default) {
+    grid[coord.y][coord.x] = cell.empty;
     return ['miss', false];
   }
 
@@ -61,6 +62,6 @@ export const shot = (coord: Coord, grid: Grid): [AttackStatus, boolean] => {
 };
 
 export const placeRandom = (): Grid => {
-  const i = Math.floor(Math.random() * SHIP_GRIDS.length - 1);
+  const i = Math.floor(Math.random() * (SHIP_GRIDS.length - 1));
   return SHIP_GRIDS[i];
 };
