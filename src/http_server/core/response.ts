@@ -139,6 +139,10 @@ export const attack = (ws: WebSocket, message: Buffer, key: string, random = fal
 export const sPlay = (ws: WebSocket, message: Buffer, key: string): void => {
   const inc = incomingParser(message) as MessageTemplate<IncomingMessage.CreateRoom>;
   const res = ActionResolver.createSingleGame(key);
+  connections.forEach((c) => {
+    c.send(outgoingParser({ type: Actions.u_room, id: inc.id, data: JSON.stringify(ActionResolver.rooms) }));
+  });
+
   ws.send(
     outgoingParser({
       type: Actions.c_game,

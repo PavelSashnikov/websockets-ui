@@ -3,11 +3,12 @@ import { Grid, Ship } from '../http_server/entities/interface/message.ts';
 export interface IUser {
   name: string;
   index: number;
+  password: string;
 }
 
 export interface IRoom {
   roomId: number;
-  roomUsers: IUser[];
+  roomUsers: Omit<IUser, 'password'>[];
 }
 
 export interface IGame {

@@ -19,7 +19,7 @@ export class ActionResolver {
     const user = validateUser({ name, password }, ++ActionResolver.id);
 
     if (!user.error) {
-      USERS_DB[socketId] = { name, index: user.index };
+      USERS_DB[socketId] = { name, password, index: user.index };
     }
 
     return user;
@@ -29,7 +29,7 @@ export class ActionResolver {
     const user = USERS_DB[key];
     const room = {
       roomId: user.index,
-      roomUsers: [user],
+      roomUsers: [{ name: user.name, index: user.index }],
     };
     ROOM_DB[user.index] = room;
     return ActionResolver.rooms;
@@ -45,7 +45,7 @@ export class ActionResolver {
     if (room?.roomUsers.some((u) => u.index === user.index) || room.roomUsers.length === 2) {
       return [null, []];
     }
-    room?.roomUsers.push(user);
+    room?.roomUsers.push({ name: user.name, index: user.index });
     const usersInGame = {
       [user.index]: [],
       [room?.roomId!]: [],
@@ -123,12 +123,17 @@ export class ActionResolver {
       grid: { [user.index + BOT_INDEX_PLUS]: placeRandom() },
     };
     GAME_DB[user.index] = game;
+    if (ROOM_DB[user.index]) {
+      delete ROOM_DB[user.index];
+    }
     return game;
   }
 
   static logout(id: string): void {
+    const user = USERS_DB[id];
+    delete USERS_DB[user.index];
+    delete ROOM_DB[user.index];
     delete USERS_DB[id];
-    delete ROOM_DB[id];
   }
 
   private static getCurrUsers(ind: (string | number)[]): string[] {

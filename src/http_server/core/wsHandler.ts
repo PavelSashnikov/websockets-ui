@@ -16,7 +16,7 @@ export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
 
   wsClient.on('message', (message: Buffer) => {
     const inc = incomingParser(message) as MessageTemplate;
-    console.log(`recieved ${inc.type} from ${key}`)
+    console.log(`recieved ${inc.type} from ${key}`);
     switch (inc.type) {
       case Actions.reg:
         reg(wsClient, message, key);
@@ -63,11 +63,12 @@ export function onConnect(wsClient: WebSocket, req: http.IncomingMessage) {
 }
 
 export function onListen() {
-  console.log(`listening on localhost:${process.env.PORT}, os hostName: ${hostname()}`);
+  console.log(`WebSocket listening on localhost:${process.env.PORT}, os hostName: ${hostname()}`);
 }
 
 process.on('SIGINT', () => {
   connections.forEach((c) => {
     c.close();
   });
+  process.exit();
 });
