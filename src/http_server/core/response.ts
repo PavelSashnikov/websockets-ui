@@ -74,7 +74,7 @@ export const addShips = (ws: WebSocket, message: Buffer, key: string): void => {
 
 export const attack = (ws: WebSocket, message: Buffer, key: string, random = false): void => {
   const inc = incomingParser(message) as MessageTemplate<IncomingMessage.Attack>;
-  let { res, nextUser, won, u } = ActionResolver.attack(inc.data, random);
+  let { res, nextUser, won, u, arround } = ActionResolver.attack(inc.data, random);
   if (!res) {
     return;
   }
@@ -97,6 +97,20 @@ export const attack = (ws: WebSocket, message: Buffer, key: string, random = fal
           data: JSON.stringify({ currentPlayer: inc.data.indexPlayer }),
         })
       );
+
+      arround?.forEach((coordinates) => {
+        connections.get(c).send(
+          outgoingParser({
+            type: Actions.attack,
+            id: inc.id,
+            data: JSON.stringify({
+              position: coordinates,
+              currentPlayer: inc.data.indexPlayer,
+              status: 'miss',
+            }),
+          })
+        );
+      });
     }
     if (won) {
       connections.get(c).send(

@@ -2,7 +2,7 @@ import { GAME_DB, WINNERS } from '../../DB/games.ts';
 import { ROOM_DB } from '../../DB/rooms.ts';
 import { USERS_DB } from '../../DB/users.ts';
 import { BOT_INDEX_PLUS } from '../entities/constants.ts';
-import { IncomingMessage, OutgoingMessage, Ship, cell } from '../entities/interface/message.ts';
+import { Coord, IncomingMessage, OutgoingMessage, Ship, cell } from '../entities/interface/message.ts';
 import { validateUser } from '../entities/validator.ts';
 import { createGrid, placeRandom, shot } from '../helpers/grid.ts';
 
@@ -82,6 +82,7 @@ export class ActionResolver {
     nextUser?: number;
     won?: boolean;
     u?: string[];
+    arround?: Coord[],
   } {
     const game = GAME_DB[data.gameId];
     const currUser = game.grid[data.indexPlayer];
@@ -93,6 +94,13 @@ export class ActionResolver {
     let x = random ? Math.floor(Math.random() * 10) : data.x;
     let y = random ? Math.floor(Math.random() * 10) : data.y;
 
+    if (
+      !random &&
+      (secondUser[y][x] === cell.shot || secondUser[y][x] === cell.empty || secondUser[y][x] === cell.kill)
+    ) {
+      return {};
+    }
+
     while (
       random &&
       (secondUser[y][x] === cell.kill || secondUser[y][x] === cell.shot || secondUser[y][x] === cell.empty)
@@ -101,7 +109,7 @@ export class ActionResolver {
       y = Math.floor(Math.random() * 10);
     }
 
-    let [res, won] = shot({ x, y }, secondUser);
+    let [res, won, arround] = shot({ x, y }, secondUser);
 
     if (won) {
       const winUser = Object.values(USERS_DB).find((u) => u.index === data.indexPlayer)?.name;
@@ -122,6 +130,7 @@ export class ActionResolver {
       nextUser: secondUserKey,
       won,
       u,
+      arround,
     };
   }
 
