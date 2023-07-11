@@ -82,7 +82,7 @@ export class ActionResolver {
     nextUser?: number;
     won?: boolean;
     u?: string[];
-    arround?: Coord[],
+    arround?: Coord[];
   } {
     const game = GAME_DB[data.gameId];
     const currUser = game.grid[data.indexPlayer];
@@ -150,9 +150,10 @@ export class ActionResolver {
 
   static logout(id: string): void {
     const user = USERS_DB[id];
-    delete USERS_DB[user.index];
-    delete ROOM_DB[user.index];
-    delete USERS_DB[id];
+    if (user) {
+      delete ROOM_DB[user.index];
+      delete USERS_DB[id];
+    }
   }
 
   private static getCurrUsers(ind: (string | number)[]): string[] {

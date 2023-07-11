@@ -7,6 +7,13 @@
 2. `npm install`
 
 ## Usage
+**App**
+When server starts you can see static server port (UI) and Websocket information in a process console.
+Each recieved command displays in process console.
+After program stopped each WS connection will be closed
+
+User adds to DB when register and removes when WS connection closed. There is no possible to create some users whith the same names.
+
 **Development**
 
 * rename `.env.example` to `.env` or create your own. *Remember about client tries  to connect to 3000*
